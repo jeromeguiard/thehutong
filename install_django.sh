@@ -8,3 +8,5 @@ pip install virtualenv
 mkdir ~/.virtualenv
 virtualenv ~/.virtualenv/thehutong 
 apt-get install mysql-server
+
+pip install 
