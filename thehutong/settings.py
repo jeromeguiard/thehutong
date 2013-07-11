@@ -4,7 +4,8 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+     ('jerome', 'jerome@letspw.com'),
+     ('Nathan', 'nathan@letspw.com'),
 )
 
 MANAGERS = ADMINS
@@ -124,6 +125,9 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'south',
+    'thehutong.hunt',
+    'thehutong.accounts',
 )
 
 # A sample logging configuration. The only tangible logging

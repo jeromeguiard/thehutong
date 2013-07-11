@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
+from django.contrib.gis.db import models
 
 class PointOfInterest(models.Model):
     """
@@ -14,9 +15,9 @@ class PointOfInterest(models.Model):
                                  default=10)
     description = models.TextField(_(u'Description of the POI'),
                                    blank=True)
-    photo = ImageField(upload_to='poi',
-                       null=True,
-                       blank=True)
+    #photo = ImageField(upload_to='poi',
+    #                   null=True,
+    #                   blank=True)
 
 class Challenge(models.Model):
     """
@@ -42,9 +43,9 @@ class Hunt(models.Model):
                                      null=False)
     endingPOI =  models.ForeignKey(PointOfInterest, 
                                    null=False)
-    challenges = models.ManyToMany(Challenge) 
+    challenges = models.ManyToManyField(Challenge) 
     duration = models.IntegerField(help_text=_(u"Durationof the hunt in minutes"),
                                    default=180) 
     unlockingPass = models.TextField(_(u'Specific password for the hunt'))
-    latePenalty = models.IntegerField(_(u'Penalty applied to the final score in case of delay',
+    latePenalty = models.IntegerField(_(u'Penalty applied to the final score in case of delay'),
                                       default=0) 

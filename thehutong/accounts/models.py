@@ -1,12 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
-from hunt.models import Hunt, Challenge
-
+from thehutong.hunt.models import Hunt, Challenge
+from django.utils.translation import ugettext as _
 class Team(models.Model):
     """
     A team that is going to perfom hunts
     """
-    name = models.textField(_(u"Team name"),
+    name = models.TextField(_(u"Team name"),
                            max_length=200)
     user = models.OneToOneField(User,
                                 unique=True,
@@ -56,5 +56,4 @@ class TeamHunt(models.Model):
     team = models.ForeignKey(Team)
     hunt = models.ForeignKey(Hunt)
     created = models.DateTimeField(auto_now_add=True)
-    challenge = models.ManyToManyField(Challenge)
-    challengesSuccesed = models.ManyToManyField(Challenge)
+    challenge = models.ManyToManyField(ChallengeTeamHunt)
