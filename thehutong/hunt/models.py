@@ -40,9 +40,11 @@ class Hunt(models.Model):
     title = models.CharField(_(u'title'),
                             max_length=255)
     startingPOI =  models.ForeignKey(PointOfInterest, 
-                                     null=False)
+                                     null=False,
+                                     related_name = 'startingPOI')
     endingPOI =  models.ForeignKey(PointOfInterest, 
-                                   null=False)
+                                   null=False,
+                                   related_name = 'endingPOI')
     challenges = models.ManyToManyField(Challenge) 
     duration = models.IntegerField(help_text=_(u"Durationof the hunt in minutes"),
                                    default=180) 

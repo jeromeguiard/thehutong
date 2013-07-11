@@ -23,11 +23,7 @@ apt-get install mysql-server libmysqlclient-dev -y
 
 mysql -pP0ww0w < sql_ini.sql 
 
-#Install pip requirments
-pip install -r requirements.txt
-
-
-#spatial installation
+#spatial library installation
 apt-get install binutils libproj-dev gdal-bin bzip2 g++ make
 wget http://download.osgeo.org/geos/geos-3.3.8.tar.bz2
 tar xjf geos-3.3.8.tar.bz2
@@ -36,3 +32,6 @@ cd geos-3.3.8
 make
 make install
 cd ..
+
+#Install pip requirments
+pip install -r requirements.txt

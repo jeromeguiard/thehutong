@@ -12,13 +12,14 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'OPTIONS' : {
-            'read_default_file': 'my.conf',
-        },
-    #    'NAME': 'thehutong',                      # Or path to database file if using sqlite3.
-    #    'USER': 'thehutong',
-    #    'PASSWORD': 'thehutong',
+        'ENGINE': 'django.contrib.gis.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+#        'OPTIONS' : {
+ #           'read_default_file': 'my.conf',
+  #      },
+        'NAME': 'thehutong',                      # Or path to database file if using sqlite3.
+        'USER': 'thehutong',
+        'PASSWORD': 'thehutong',
+        'OPTIONS' : {'init_command' : 'SET storage_engine=MyISAM'},
     }
 }
 
@@ -128,6 +129,7 @@ INSTALLED_APPS = (
     'south',
     'thehutong.hunt',
     'thehutong.accounts',
+    'django.contrib.gis',
 )
 
 # A sample logging configuration. The only tangible logging
