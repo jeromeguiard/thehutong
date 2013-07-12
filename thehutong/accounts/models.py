@@ -14,6 +14,13 @@ class Team(models.Model):
                                 verbose_name=_(u'user'))
     created = models.DateTimeField(auto_now_add=True) 
 
+    class Meta:
+        verbose_name = _(u'Team')
+        verbose_name_plural = _(u'Teams')
+
+    def __unicode__(self):
+        return u"%s" % self.name 
+
 class ChallengeTeamHunt(models.Model):
     """
     Individual challenge performed by a team durin a hunt
@@ -49,6 +56,15 @@ class ChallengeTeamHunt(models.Model):
                               choices=LOCKED_STATUS,
                               default=LOCKED)
 
+    class Meta:
+        verbose_name = _(u'Challenge by a team during a hunt')
+        verbose_name_plural = _(u'Challenges made by teams during hunts')
+
+
+    def  __unicode__(self):
+        return u"Challenge made by %s in the challenge %s" % (self.team.name, self.challenge)
+
+
 class TeamHunt(models.Model):
     """
     When a team start a hunt it will generate this object to follow it \
@@ -58,3 +74,10 @@ class TeamHunt(models.Model):
     hunt = models.ForeignKey(Hunt)
     created = models.DateTimeField(auto_now_add=True)
     challenge = models.ManyToManyField(ChallengeTeamHunt)
+
+    class Meta:
+        verbose_name = _(u'Hunt made by a team')
+        verbose_name_plural = _(u'Hunts made by teams')
+
+    def __unicode__(self):
+        return u"Hunt's %s by %s" % (self.team, self.hunt) 

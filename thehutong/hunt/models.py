@@ -19,6 +19,14 @@ class PointOfInterest(models.Model):
     #                   null=True,
     #                   blank=True)
 
+    class Meta:
+        verbose_name = _(u'Point of interest')
+        verbose_name_plural = _(u'Points of interest')
+
+    def __unicode__(self):
+        return u'%s' % self.title
+
+
 class Challenge(models.Model):
     """
     A challenge to complete to a special point of interest during a hunt
@@ -31,6 +39,13 @@ class Challenge(models.Model):
     question = models.TextField(_(u'Specific question for the challenge'))
     answer = models.CharField(_("Question answer"),
                               max_length=255)
+
+    class Meta:
+        verbose_name = _(u'Challange')
+        verbose_name_plural = _(u'Challenges')
+
+    def __unicode__(self):
+        return u'Challenge : %s in poi %s' % (self.title, self.poi)
 
 class Hunt(models.Model):
     """
@@ -51,3 +66,10 @@ class Hunt(models.Model):
     unlockingPass = models.TextField(_(u'Specific password for the hunt'))
     latePenalty = models.IntegerField(_(u'Penalty applied to the final score in case of delay'),
                                       default=0) 
+
+    class Meta:
+        verbose_name = _(u'Hunt')
+        verbose_name_plural = _(u'Hunt')
+
+    def __unicode__(self):
+        return u'Hunt %s' % self.title

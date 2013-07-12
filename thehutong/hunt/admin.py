@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.gis import admin
 from .models import PointOfInterest, Challenge, Hunt
 
-class PointOfInterestAdmin(admin.ModelAdmin):
+class PointOfInterestAdmin(admin.OSMGeoAdmin):
     pass
 admin.site.register(PointOfInterest, PointOfInterestAdmin)
 
