@@ -12,14 +12,14 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.contrib.gis.db.backends.postgis', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
 #        'OPTIONS' : {
  #           'read_default_file': 'my.conf',
   #      },
         'NAME': 'thehutong',                      # Or path to database file if using sqlite3.
         'USER': 'thehutong',
         'PASSWORD': 'thehutong',
-        'OPTIONS' : {'init_command' : 'SET storage_engine=MyISAM'},
+        #'OPTIONS' : {'init_command' : 'SET storage_engine=MyISAM'},
     }
 }
 

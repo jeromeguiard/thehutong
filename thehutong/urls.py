@@ -12,5 +12,5 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/hunt/', include('thehutong.hunt.urls')),
-    url(r'^api/account/', include('thehutong.account.urls')),
+#    url(r'^api/account/', include('thehutong.accounts.urls')),
 )
