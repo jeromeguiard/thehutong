@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from thehutong.hunt.models import Hunt, Challenge
 from django.utils.translation import ugettext as _
+
 class Team(models.Model):
     """
     A team that is going to perfom hunts
