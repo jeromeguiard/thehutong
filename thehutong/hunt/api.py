@@ -14,9 +14,12 @@ class ChallengeResource(ModelResource):
         resource_name = 'challenge'
 
 class HuntResource(ModelResource):
-    startingPOI = fields.ForeignKey(PointOfInterestResource, 'startingPOI')
-    endingPOI = fields.ForeignKey(PointOfInterestResource, 'endingPOI')
+    startingPOI = fields.ForeignKey(PointOfInterestResource, 'startingPOI', full=True)
+    endingPOI = fields.ForeignKey(PointOfInterestResource, 'endingPOI', full=True)
     challenges = fields.ToManyField(ChallengeResource, 'challenges')
     class Meta:
         queryset = Hunt.objects.all()
         resource_name = 'hunt'
+    ordering = [
+        'created'
+    ]

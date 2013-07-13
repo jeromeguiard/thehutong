@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.contrib.gis import admin
-from .models import Team, ChallengeTeamHunt, TeamHunt  
+from .models import ChallengeTeamHunt, TeamHunt  
 
-class TeamAdmin(admin.ModelAdmin):
-    pass
-admin.site.register(Team, TeamAdmin)
+#class TeamAdmin(admin.ModelAdmin):
+#    pass
+#admin.site.register(Team, TeamAdmin)
 
 class ChallengeTeamHuntAdmin(admin.ModelAdmin):
     pass
