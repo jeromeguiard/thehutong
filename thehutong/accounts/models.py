@@ -46,7 +46,7 @@ class ChallengeTeamHunt(models.Model):
     )
 
     challenge = models.ForeignKey(Challenge)
-    user = models.ForeignKey(User)
+ #   user = models.ForeignKey(User)
     points = models.IntegerField(help_text = _(u"Point earned while the challenge has been completed"),
                                 default=0)
     status = models.IntegerField(_(u'Completed status for the challenge'),

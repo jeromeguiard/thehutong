@@ -17,8 +17,9 @@ function login(){
    request.onloadend = function(){
                        if(request.status == 200){
                            object = JSON.parse(request.response).objects[0];
-                           sessionStorage.setItem("username",object.user.username);
-                           sessionStorage.setItem("key",object.key);
+                           sessionStorage.setItem("username", object.user.username);
+                           sessionStorage.setItem("key", object.key);
+                           sessionStorage.setItem("userId", object.user.id);
                            getHunts();
                        }
                       };
@@ -70,9 +71,21 @@ function takePartInHunt(huntId, firstTry ){
         password = window.prompt("Wrong pass try again:");
         
     var huntInfo = JSON.parse(sessionStorage.getItem("hunt_"+huntId));
-    debugger;
     if (password == huntInfo.unlockingPass){
-        alert("ok");
+        var huntTeam = {'user':'/api/account/v1/user/' + sessionStorage.getItem("userId"),
+                        'hunt':'/api/hunt/v1/hunt/'+huntId,
+                        'challenge':huntInfo.challenges};
+        console.log(huntTeam);
+        var jsonTosend = JSON.stringify(huntTeam);
+        var request= new XMLHttpRequest();
+        request.open("POST", "/api/account/v1/teamhunt/",1);
+        request.setRequestHeader("Authorization", "ApiKey "+
+                                             sessionStorage.getItem("team")+
+                                             ":"+
+                                             sessionStorage.getItem("password"));
+        request.setRequestHeader("Content-Type","application/json");
+        request.onloadend =function(){ console.log(request.response);};
+        request.send(jsonTosend);
     }else{
        takePartInHunt(huntId, false); 
     }
