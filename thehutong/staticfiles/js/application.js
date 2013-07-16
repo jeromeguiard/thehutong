@@ -32,9 +32,9 @@ function getHunts(){
                  "/api/hunt/v1/hunt/?format=json",
                  true);
     request.setRequestHeader("Authorization", "ApiKey "+
-                                             sessionStorage.getItem("team")+
+                                             sessionStorage.getItem("username")+
                                              ":"+
-                                             sessionStorage.getItem("password"));
+                                             sessionStorage.getItem("key"));
    request.onloadend = function(){displayHunts(JSON.parse(request.response));};
    request.send();
 }
@@ -72,17 +72,17 @@ function takePartInHunt(huntId, firstTry ){
         
     var huntInfo = JSON.parse(sessionStorage.getItem("hunt_"+huntId));
     if (password == huntInfo.unlockingPass){
-        var huntTeam = {'user':'/api/account/v1/user/' + sessionStorage.getItem("userId"),
-                        'hunt':'/api/hunt/v1/hunt/'+huntId,
-                        'challenge':huntInfo.challenges};
+        var huntTeam = {'user':'/api/account/v1/user/' + sessionStorage.getItem("userId")+'/',
+                        'hunt':'/api/hunt/v1/hunt/'+huntId+'/',
+                        'challenge':[]};
         console.log(huntTeam);
         var jsonTosend = JSON.stringify(huntTeam);
         var request= new XMLHttpRequest();
         request.open("POST", "/api/account/v1/teamhunt/",1);
         request.setRequestHeader("Authorization", "ApiKey "+
-                                             sessionStorage.getItem("team")+
+                                             sessionStorage.getItem("username")+
                                              ":"+
-                                             sessionStorage.getItem("password"));
+                                             sessionStorage.getItem("key"));
         request.setRequestHeader("Content-Type","application/json");
         request.onloadend =function(){ console.log(request.response);};
         request.send(jsonTosend);

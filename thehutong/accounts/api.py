@@ -2,7 +2,7 @@ from tastypie import fields
 from tastypie.resources import ModelResource
 from .models import ChallengeTeamHunt, TeamHunt
 from thehutong.hunt.api import ChallengeResource, HuntResource
-from tastypie.authentication import BasicAuthentication
+from tastypie.authentication import BasicAuthentication, ApiKeyAuthentication
 from tastypie.authorization import Authorization
 from tastypie.models import ApiKey
 from django.contrib.auth.models import User
@@ -47,10 +47,12 @@ class ChallengeTeamHuntResource(ModelResource):
 class TeamHuntResource(ModelResource):
     user = fields.ForeignKey(UserResource, 'user', full=True)
     hunt = fields.ForeignKey(HuntResource, 'hunt', full=True)
-    challenge = fields.ToManyField(ChallengeResource, 'challenge')
+    challenge = fields.ToManyField(ChallengeTeamHuntResource, 'challenge')
     class Meta:
         queryset = TeamHunt.objects.all()
         resource_name = 'teamhunt'
+        authentication = ApiKeyAuthentication()
+        authorization = Authorization()
         filtering = {
             'team':('exact'),
             'hunt':('exact'),
