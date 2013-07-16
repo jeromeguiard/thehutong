@@ -40,9 +40,9 @@ class ChallengeTeamHuntResource(ModelResource):
         resource_name = 'challengeteamhunt'
 
 class TeamHuntResource(ModelResource):
-    user = fields.ForeignKey(UserResource, 'user', full=True)
-    hunt = fields.ForeignKey(HuntResource, 'hunt', full=True)
-    challenge = fields.ToManyField(ChallengeTeamHuntResource, 'challenge')
+    user = fields.ForeignKey(UserResource, 'user')
+    hunt = fields.ForeignKey(HuntResource, 'hunt')
+    challenge = fields.ToManyField(ChallengeTeamHuntResource, 'challenge', full=True)
     class Meta:
         queryset = TeamHunt.objects.all()
         resource_name = 'teamhunt'

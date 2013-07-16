@@ -8,7 +8,7 @@ class PointOfInterestResource(ModelResource):
         resource_name = 'poi'
 
 class ChallengeResource(ModelResource):
-    poi = fields.ForeignKey(PointOfInterestResource, 'poi')
+    poi = fields.ForeignKey(PointOfInterestResource, 'poi', full=True)
     class Meta:
         queryset = Challenge.objects.all()
         resource_name = 'challenge'

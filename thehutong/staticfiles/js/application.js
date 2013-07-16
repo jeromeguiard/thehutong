@@ -108,15 +108,14 @@ function takePartInHunt(huntId, firstTry ){
         console.log(huntTeam);
         var jsonTosend = JSON.stringify(huntTeam);
         var request= new XMLHttpRequest();
-        request.open("POST", "/api/account/v1/teamhunt/",1);
+        request.open("POST", "/api/account/v1/teamhunt/",false);
         request.setRequestHeader("Authorization", "ApiKey "+
                                              sessionStorage.getItem("username")+
                                              ":"+
                                              sessionStorage.getItem("key"));
         request.setRequestHeader("Content-Type","application/json");
-        request.onloadend =function(){ 
-                             displayTeamHuntAndChallenge(request.getResponseHeader("Location"));};
         request.send(jsonTosend);
+        displayTeamHuntAndChallenge(request.getResponseHeader("Location"));
     }else{
        takePartInHunt(huntId, false); 
     }
@@ -128,7 +127,31 @@ function takePartInHunt(huntId, firstTry ){
  */
 
 function displayTeamHuntAndChallenge(headers){
-    console.log(headers);
+    var request = new XMLHttpRequest();
+    request.open("GET",
+                 "/api/account/v1/teamhunt/"+headers.split("/").reverse()[1]+"/?format=json",
+                 true);
+    request.setRequestHeader("Authorization", "ApiKey "+
+                                         sessionStorage.getItem("username")+
+                                         ":"+
+                                         sessionStorage.getItem("key"));
+    request.onloadend = function(){ 
+        var containter = document.getElementById("container");
+        container.innerHTML = "";
+        teamHuntData = JSON.parse(request.response);
+        teamHuntData.challenge.forEach(function(item, index){
+            sessionStorage.setItem("challenge"+index,
+                                   JSON.stringify(item));
+            
+         objectDiv = document.createElement("div");
+         objectDiv.innerHTML = "<div><div>Go to the POI "+ item.challenge.poi.title+"</div><p>And answer the following question: "+item.challenge.question +"</p> </div>";
+         container.appendChild(objectDiv);
+            });
+        sessionStorage.setItem("challenges",
+                   JSON.stringify(teamHuntData.challenge));
+        
+    }; 
+    request.send();
 }
 
 
