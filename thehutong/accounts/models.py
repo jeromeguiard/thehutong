@@ -29,7 +29,6 @@ class ChallengeTeamHunt(models.Model):
     )
 
     challenge = models.ForeignKey(Challenge)
-   # user = models.ForeignKey(User)
     points = models.IntegerField(help_text = _(u"Point earned while the challenge has been completed"),
                                 default=0)
     status = models.IntegerField(_(u'Completed status for the challenge'),
@@ -62,6 +61,7 @@ class TeamHunt(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     challenge = models.ManyToManyField(ChallengeTeamHunt,
                                       blank=True,null=True)
+
 
     class Meta:
         verbose_name = _(u'Hunt made by a team')

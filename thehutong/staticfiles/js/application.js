@@ -10,11 +10,11 @@ function generateLogin(){
     containerLoginContent.innerHTML= '<h1>Login</h1><input type="text" value="Team name" id="team"><br/></input><input type="password" id="password"></input><br/><input type="button" class="btn" value="login" onclick="login();"></input>';
     container.appendChild(containerLoginContent); 
 }
+
 /*
  *Login process
  *
- * */
-
+ */
 function login(){
    var team = document.getElementById("team").value;
    var password = document.getElementById("password").value;
