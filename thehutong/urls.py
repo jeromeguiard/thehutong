@@ -10,6 +10,7 @@ urlpatterns = patterns('',
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
+    #url(r'^admin/', include(admin.site.urls)),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/hunt/', include('thehutong.hunt.urls')),
     url(r'^api/account/', include('thehutong.accounts.urls')),

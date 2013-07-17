@@ -1,0 +1,12 @@
+#header {
+    /*background: #417690;*/
+    background-color: #FFF;
+    color: #ffc;
+    overflow: hidden;
+}
+
+#branding h1 {
+    font-size: 30px;
+    background: url(../img/thehutong_tree_logo.jpg) left no-repeat;
+    background-size: 30px;
+}

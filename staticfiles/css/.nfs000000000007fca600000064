@@ -1,0 +1,49 @@
+a:link, a:visited {
+    color: #802;
+}
+
+#header {
+    /*background: #417690;*/
+    background-color: #FFF;
+    color: #ffc;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid rgba(160, 0, 32, 0.2);
+    padding-bottom: 4px;
+}
+
+#branding h1 {
+    font-size: 40px;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    background: url(../img/thehutong_tree_logo.jpg) 10px top no-repeat;
+    background-size: 38px;
+    padding-left: 55px;
+    color: #A02;
+    letter-spacing: -1px;
+    padding-top: 3px;
+    margin-bottom: 0px;
+}
+
+#content {
+    margin-top: 8px;
+}
+
+#content h1 {
+    margin-bottom: 6px;
+}
+
+.module h2, .module caption, .inline-group h2 {
+    margin: 0;
+    padding: 2px 5px 3px 5px;
+    font-size: 11px;
+    text-align: left;
+    font-weight: bold;
+    background: #7CA0C7 url(../img/default-bg.gif) top left repeat-x;
+    color: white;
+}
+
+div.breadcrumbs {
+    border-top: none;
+}
