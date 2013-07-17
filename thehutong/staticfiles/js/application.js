@@ -144,8 +144,13 @@ function displayTeamHuntAndChallenge(headers){
                                    JSON.stringify(item));
             
          objectDiv = document.createElement("div");
-         objectDiv.innerHTML = "<div><div>Go to the POI "+ item.challenge.poi.title+"</div><p>And answer the following question: "+item.challenge.question +"</p> </div>";
-         container.appendChild(objectDiv);
+         console.log(item.lock);
+         if (item.lock == 1){
+             objectDiv.innerHTML = "<div><div>Go to the POI "+ item.challenge.poi.title+"</div><p>And answer the following question: "+item.challenge.question +"</p> </div>";
+          }else{
+              objectDiv.innerHTML = "<div>The challenge is lock</div>";   
+          }
+             container.appendChild(objectDiv);
             });
         sessionStorage.setItem("challenges",
                    JSON.stringify(teamHuntData.challenge));

@@ -54,6 +54,8 @@ class TeamHuntResource(ModelResource):
         }
     def obj_create(self, bundle, request = None, **kwargs):
         bundle = super(TeamHuntResource, self ).obj_create(bundle, **kwargs)
-        for chal in bundle.obj.hunt.challenges.all() :
+        for index, chal in enumerate(bundle.obj.hunt.challenges.all()) :
+            if index == 0 :
+                bundle.obj.challenge.create(challenge=chal, lock = 1)
             bundle.obj.challenge.create(challenge=chal)
         return bundle
