@@ -1,6 +1,0 @@
-#header {
-    /*background: #417690;*/
-    background-color: #006;
-    color: #ffc;
-    overflow: hidden;
-}
