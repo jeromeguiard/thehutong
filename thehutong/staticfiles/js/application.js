@@ -1,3 +1,7 @@
+/*
+ * function used in order to generate the login form used to access the application
+ *
+ * */
 function generateLogin(){
     var container = document.getElementById("container");
     var containerLoginContent = document.createElement("div");
@@ -6,6 +10,11 @@ function generateLogin(){
     containerLoginContent.innerHTML= '<h1>Login</h1><input type="text" value="Team name" id="team"><br/></input><input type="password" id="password"></input><br/><input type="button" class="btn" value="login" onclick="login();"></input>';
     container.appendChild(containerLoginContent); 
 }
+
+/*
+ *Login process
+ *
+ */
 function login(){
    var team = document.getElementById("team").value;
    var password = document.getElementById("password").value;
@@ -17,13 +26,20 @@ function login(){
    request.onloadend = function(){
                        if(request.status == 200){
                            object = JSON.parse(request.response).objects[0];
-                           sessionStorage.setItem("username",object.user.username);
-                           sessionStorage.setItem("key",object.key);
+                           sessionStorage.setItem("username", object.user.username);
+                           sessionStorage.setItem("key", object.key);
+                           sessionStorage.setItem("userId", object.user.id);
                            getHunts();
                        }
                       };
+   
    request.send();
 }
+
+/*
+ * retrieve hunt informations
+ *
+ */
 
 function getHunts(){
     var request = new XMLHttpRequest();
@@ -31,12 +47,17 @@ function getHunts(){
                  "/api/hunt/v1/hunt/?format=json",
                  true);
     request.setRequestHeader("Authorization", "ApiKey "+
-                                             sessionStorage.getItem("team")+
+                                             sessionStorage.getItem("username")+
                                              ":"+
-                                             sessionStorage.getItem("password"));
+                                             sessionStorage.getItem("key"));
    request.onloadend = function(){displayHunts(JSON.parse(request.response));};
    request.send();
 }
+
+/*
+ *Display hunts on the webpage and store informations in sessionstorage for fster purpose
+ *
+ */
 
 function displayHunts(objects){
     console.log(objects);
@@ -51,6 +72,10 @@ function displayHunts(objects){
     }
     );
 }
+/*
+ * Show from the sessionStorage informations about the hunt
+ *
+ */
 
 function viewHuntDetails(huntId){
     huntInfo = JSON.parse(sessionStorage.getItem("hunt_"+huntId));
@@ -61,6 +86,12 @@ function viewHuntDetails(huntId){
     container.appendChild(objectDiv);
 }
 
+
+/*
+ * Validate the user password and let him take part in hunt
+ *
+ */
+
 function takePartInHunt(huntId, firstTry ){
     if(typeof(firstTry)==='undefined') firstTry = true;
     var password;
@@ -70,13 +101,70 @@ function takePartInHunt(huntId, firstTry ){
         password = window.prompt("Wrong pass try again:");
         
     var huntInfo = JSON.parse(sessionStorage.getItem("hunt_"+huntId));
-    debugger;
     if (password == huntInfo.unlockingPass){
-        alert("ok");
+        var huntTeam = {'user':'/api/account/v1/user/' + sessionStorage.getItem("userId")+'/',
+                        'hunt':'/api/hunt/v1/hunt/'+huntId+'/',
+                        'challenge':[]};
+        console.log(huntTeam);
+        var jsonTosend = JSON.stringify(huntTeam);
+        var request= new XMLHttpRequest();
+        request.open("POST", "/api/account/v1/teamhunt/",false);
+        request.setRequestHeader("Authorization", "ApiKey "+
+                                             sessionStorage.getItem("username")+
+                                             ":"+
+                                             sessionStorage.getItem("key"));
+        request.setRequestHeader("Content-Type","application/json");
+        request.send(jsonTosend);
+        displayTeamHuntAndChallenge(request.getResponseHeader("Location"));
     }else{
        takePartInHunt(huntId, false); 
     }
 }
+
+/*
+ * Display challenges and store informaitons in session storage
+ *
+ */
+
+function displayTeamHuntAndChallenge(headers){
+    var request = new XMLHttpRequest();
+    request.open("GET",
+                 "/api/account/v1/teamhunt/"+headers.split("/").reverse()[1]+"/?format=json",
+                 true);
+    request.setRequestHeader("Authorization", "ApiKey "+
+                                         sessionStorage.getItem("username")+
+                                         ":"+
+                                         sessionStorage.getItem("key"));
+    request.onloadend = function(){ 
+        var containter = document.getElementById("container");
+        container.innerHTML = "";
+        teamHuntData = JSON.parse(request.response);
+        teamHuntData.challenge.forEach(function(item, index){
+            sessionStorage.setItem("challenge"+index,
+                                   JSON.stringify(item));
+            
+         objectDiv = document.createElement("div");
+         console.log(item.lock);
+         if (item.lock == 1){
+             objectDiv.innerHTML = "<div><div>Go to the POI "+ item.challenge.poi.title+"</div><p>And answer the following question: "+item.challenge.question +"</p> </div>";
+          }else{
+              objectDiv.innerHTML = "<div>The challenge is lock</div>";   
+          }
+             container.appendChild(objectDiv);
+            });
+        sessionStorage.setItem("challenges",
+                   JSON.stringify(teamHuntData.challenge));
+        
+    }; 
+    request.send();
+}
+
+
+/*
+ *
+ *First execution with the test if local/session storage is on
+ *
+ */
 
 try{
     'localStorage' in window && window['localStorage'] !== null;

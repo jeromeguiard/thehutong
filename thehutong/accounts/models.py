@@ -4,24 +4,7 @@ from thehutong.hunt.models import Hunt, Challenge
 from django.utils.translation import ugettext as _
 from tastypie.models import create_api_key
 
-#class Team(models.Model):
-#    """
-#    A team that is going to perfom hunts
-#    """
-#    name = models.TextField(_(u"Team name"),
-#                           max_length=200)
-#    user = models.OneToOneField(User,
-#                                unique=True,
-#                                verbose_name=_(u'user'))
-#    created = models.DateTimeField(auto_now_add=True) 
-#
-#    class Meta:
-#        verbose_name = _(u'Team')
-#        verbose_name_plural = _(u'Teams')
-#
-#    def __unicode__(self):
-#        return u"%s" % self.name 
-models.signals.post_save.connect(create_api_key, sender=User)
+#models.signals.post_save.connect(create_api_key, sender=User)
 
 class ChallengeTeamHunt(models.Model):
     """
@@ -46,14 +29,15 @@ class ChallengeTeamHunt(models.Model):
     )
 
     challenge = models.ForeignKey(Challenge)
-    user = models.ForeignKey(User)
     points = models.IntegerField(help_text = _(u"Point earned while the challenge has been completed"),
                                 default=0)
     status = models.IntegerField(_(u'Completed status for the challenge'),
                                  choices=COMPLETED_STATUS,
                                  default=NOT_STARTED)
     comment = models.CharField(_(u'Comment about the challenge'),
-                              max_length = 140)
+                              max_length = 140,
+                              null=True,
+                              blank = True)
     lock = models.IntegerField(_(u'Challenge lock status'),
                               choices=LOCKED_STATUS,
                               default=LOCKED)
@@ -64,7 +48,7 @@ class ChallengeTeamHunt(models.Model):
 
 
     def  __unicode__(self):
-        return u"Challenge made by %s in the challenge %s" % (self.team.name, self.challenge)
+        return u"Challenge made by in the challenge %s" % (self.challenge)
 
 
 class TeamHunt(models.Model):
@@ -75,11 +59,13 @@ class TeamHunt(models.Model):
     user = models.ForeignKey(User)
     hunt = models.ForeignKey(Hunt)
     created = models.DateTimeField(auto_now_add=True)
-    challenge = models.ManyToManyField(ChallengeTeamHunt)
+    challenge = models.ManyToManyField(ChallengeTeamHunt,
+                                      blank=True,null=True)
+
 
     class Meta:
         verbose_name = _(u'Hunt made by a team')
         verbose_name_plural = _(u'Hunts made by teams')
 
     def __unicode__(self):
-        return u"Hunt's %s by %s" % (self.team, self.hunt) 
+        return u"Hunt's %s by %s" % (self.user, self.hunt) 
