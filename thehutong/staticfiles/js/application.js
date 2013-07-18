@@ -144,11 +144,12 @@ function displayTeamHuntAndChallenge(headers){
                                    JSON.stringify(item));
             
          objectDiv = document.createElement("div");
+         objectDiv.setAttribute("class", "row-fluid hero-unit");
          console.log(item.lock);
          if (item.lock == 1){
-             objectDiv.innerHTML = "<div><div>Go to the POI "+ item.challenge.poi.title+"</div><p>And answer the following question: "+item.challenge.question +"</p> </div>";
+             objectDiv.innerHTML = "<div id=\"challenge_"+item.id+"\"><div>Go to the POI "+ item.challenge.poi.title+"</div><p>And answer the following question: "+item.challenge.question +"</p> <button class=\"btn\" onclick=\"submitAnswer("+item.id+");\">Answer</button></div>";
           }else{
-              objectDiv.innerHTML = "<div>The challenge is lock</div>";   
+              objectDiv.innerHTML = "<div id=\"challenge_"+item.id+"\">The challenge is lock</div>";   
           }
              container.appendChild(objectDiv);
             });
@@ -159,6 +160,54 @@ function displayTeamHuntAndChallenge(headers){
     request.send();
 }
 
+function submitAnswer(challengeId){
+     var challenges = JSON.parse(sessionStorage.getItem("challenges"));
+     var currentChallenge = null; 
+     var nextChallenge = null;
+     challenges.forEach(function(element, index){
+         if (element.id == challengeId){
+             currentChallenge = element;
+         }
+         if (element.id == challengeId+1){
+             nextChallenge = element;
+         }
+    });
+    answer = window.prompt("Please type the answer:");
+    if (answer.toLowerCase() == currentChallenge.challenge.answer.toLowerCase()){
+        console.log(currentChallenge);
+        var request = new XMLHttpRequest();
+        var jsonToSend = "{\"points\":"+currentChallenge.challenge.numberOfPoints
+                         +", \"status\":"+1+"}";
+        request.open("PATCH",
+                     "/api/account/v1/challengeteamhunt/"+currentChallenge.id+"/",
+                     false);
+        request = setRequestHeaderAuthorization(request);
+        request.setRequestHeader("Content-Type", "application/json");
+        request.send(jsonToSend);
+        var requestNext = new XMLHttpRequest();
+        var jsonToSend = "{\"lock\":"+1
+                         +", \"status\":"+2+"}";
+        requestNext.open("PATCH",
+                     "/api/account/v1/challengeteamhunt/"+(currentChallenge.id+1)+"/",
+                     false);
+        requestNext = setRequestHeaderAuthorization(requestNext);
+        requestNext.setRequestHeader("Content-Type", "application/json");
+        requestNext.send(jsonToSend);
+        var nextObjectDiv = document.getElementById("challenge_"+nextChallenge.id);
+        nextObjectDiv.innerHTML = "<div id=\"challenge_"+nextChallenge.id+"\"><div>Go to the POI "+ nextChallenge.challenge.poi.title+"</div><p>And answer the following question: "+nextChallenge.challenge.question +"</p> <button class=\"btn\" onclick=\"submitAnswer("+nextChallenge.id+");\">Answer</button></div>";
+         
+    }else {
+       alert("Bad answer");
+    }
+}
+
+function setRequestHeaderAuthorization(request){
+    request.setRequestHeader("Authorization", "ApiKey "+
+                                         sessionStorage.getItem("username")+
+                                         ":"+
+                                         sessionStorage.getItem("key"));
+    return request;
+}
 
 /*
  *
