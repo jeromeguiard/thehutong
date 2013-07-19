@@ -177,6 +177,10 @@ function displayTeamHuntAndChallenge(headers){
     request.send();
 }
 
+/*
+ *Prepare element on the webpage to display the map
+ */
+
 function displayMap(){
     var container = document.getElementById("container");
     container.innerHTML = "";
@@ -187,17 +191,46 @@ function displayMap(){
 
     container.appendChild(mapContainer);
     initialize();
+    populateWithUnlockPOI();
 
 }
+
+/*
+ * Initialize the map
+ *
+ */
 
 function initialize(){
     var map_canvas = document.getElementById("map_canvas");
     var map_option = {
-      center : new google.maps.LatLng(36,119),
-      zoom : 8,
+      center : new google.maps.LatLng(39.93,116.42),
+      zoom : 13,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     }
-    var map = new google.maps.Map(map_canvas, map_option)
+    map = new google.maps.Map(map_canvas, map_option)
+}
+
+/*
+ *
+ * Populate the map unlock poi
+ *
+ */
+
+function populateWithUnlockPOI(){
+    var challenges = JSON.parse(sessionStorage.getItem("challenges"));
+    challenges.forEach(function(element){
+        if (element.lock == 1)
+            var coordinateAsString = element.challenge.poi.point.replace("POINT (","").replace(")",""); 
+            var coordinates = new google.maps.LatLng(parseFloat(coordinateAsString.split(" ")[1]),
+                                                     parseFloat(coordinateAsString.split(" ")[0]));
+            var marker = new google.maps.Marker({
+                position: coordinates,
+                title: element.challenge.poi.title
+            });
+            marker.setMap(map);
+        }
+    });
+
 }
 
 function submitAnswer(challengeId){
@@ -254,7 +287,7 @@ function setRequestHeaderAuthorization(request){
  *First execution with the test if local/session storage is on
  *
  */
-
+var map = null;
 try{
     'localStorage' in window && window['localStorage'] !== null;
     generateLogin();
