@@ -66,6 +66,7 @@ class TeamHunt(models.Model):
     class Meta:
         verbose_name = _(u'Hunt made by a team')
         verbose_name_plural = _(u'Hunts made by teams')
+        #unique_together=(user, hunt)
 
     def __unicode__(self):
         return u"Hunt's %s by %s" % (self.user, self.hunt) 
