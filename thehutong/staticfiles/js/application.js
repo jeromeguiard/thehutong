@@ -2,13 +2,17 @@
  *
  * function used in order to generate the login form used to access the application
  *
- * */
+ */
+
 function generateLogin(){
     var container = document.getElementById("container");
     var containerLoginContent = document.createElement("div");
     containerLoginContent.setAttribute("id","containerLogin");
     containerLoginContent.setAttribute("class","hero-unit");
-    containerLoginContent.innerHTML= '<h1>Login</h1><input type="text" value="Team name" id="team"><br/></input><input type="password" id="password"></input><br/><input type="button" class="btn" value="login" onclick="login();"></input>';
+    containerLoginContent.innerHTML= "<h1>Login</h1><input type=\"text\" value=\"Team name\""+
+                                     " id=\"team\"><br/></input><input type=\"password\" "+
+                                     "id=\"password\"></input><br/><input type=\"button\" "+
+                                     " class=\"btn\" value=\"login\" onclick=\"login();\"></input>";
     container.appendChild(containerLoginContent); 
 }
 
@@ -17,6 +21,7 @@ function generateLogin(){
  *Login process
  *
  */
+
 function login(){
    var team = document.getElementById("team").value;
    var password = document.getElementById("password").value;
@@ -28,8 +33,11 @@ function login(){
    request.onloadend = function(){
                        if(request.status == 200){
                            object = JSON.parse(request.response).objects[0];
-                           userId = document.getElementById("userNavBar");
-                           userId.innerHTML = object.user.username;
+                           var menu = document.getElementById("menu");
+                           var userId = document.createElement("li");
+                           userId.setAttribute("id","userNavBar");
+                           userId.innerHTML = "<a>"+object.user.username+"</a>";
+                           menu.appendChild(userId);
                            sessionStorage.setItem("username", object.user.username);
                            sessionStorage.setItem("key", object.key);
                            sessionStorage.setItem("userId", object.user.id);
@@ -73,7 +81,7 @@ function getHunts(){
 
 function displayHunts(objects, firstTime){
     if (firstTime)
-        sessionStorage.setItem("huntInformations",JSON.stringify(objects))
+        sessionStorage.setItem("huntInformations", JSON.stringify(objects));
     else
         objects = JSON.parse(sessionStorage.getItem("huntInformations"));
     var container = document.getElementById("container");
@@ -97,8 +105,15 @@ function displayHunts(objects, firstTime){
  */
 
 function viewHuntDetails(huntId){
-    returnBtn = document.getElementById("returnBtn");
-    returnBtn.innerHTML = "<div class\"btn\" onclick=\"displayHunts(null,false);\">Return</div>";
+    if( document.getElementById("returnBtn") == null){
+        var menu = document.getElementById("menu");
+        var returnBtn = document.createElement("li");
+        returnBtn.setAttribute("id", "returnBtn");
+        menu.appendChild(returnBtn);
+    }else{
+        var returnBtn = document.getElementById("returnBtn");
+    }
+    returnBtn.innerHTML = "<a  onclick=\"displayHunts(null,false);\">Return</a>";
     huntInfo = JSON.parse(sessionStorage.getItem("hunt_"+huntId));
     var container = document.getElementById("container");
     container.innerHTML = "";
@@ -158,7 +173,7 @@ function getTeamHuntAndChallenge(headers){
                  "/api/account/v1/teamhunt/"+headers.split("/").reverse()[1]+"/?format=json",
                  true);
     
-    request.setRequestHeaderAuthorization(request);
+    request = setRequestHeaderAuthorization(request);
     request.onloadend = function(){ 
         teamHuntData = JSON.parse(request.response);
         sessionStorage.setItem("challenges",
@@ -212,7 +227,7 @@ function displayChallenges(){
 /*
  *
  *Prepare element on the webpage to display the map
-
+ *
  */
 
 function displayMap(){
