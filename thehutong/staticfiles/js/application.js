@@ -26,6 +26,8 @@ function login(){
    request.onloadend = function(){
                        if(request.status == 200){
                            object = JSON.parse(request.response).objects[0];
+                           userId = document.getElementById("userNavBar");
+                           userId.innerHTML = object.user.username;
                            sessionStorage.setItem("username", object.user.username);
                            sessionStorage.setItem("key", object.key);
                            sessionStorage.setItem("userId", object.user.id);
@@ -50,7 +52,13 @@ function getHunts(){
                                              sessionStorage.getItem("username")+
                                              ":"+
                                              sessionStorage.getItem("key"));
-   request.onloadend = function(){displayHunts(JSON.parse(request.response));};
+   request.onloadend = function(){
+             if(request.status == 200){
+                 displayHunts(JSON.parse(request.response), true);}
+             else{
+                 displayServerError();
+             }
+   };
    request.send();
 }
 
@@ -59,8 +67,11 @@ function getHunts(){
  *
  */
 
-function displayHunts(objects){
-    console.log(objects);
+function displayHunts(objects, firstTime){
+    if (firstTime)
+        sessionStorage.setItem("huntInformations",JSON.stringify(objects))
+    else
+        objects = JSON.parse(sessionStorage.getItem("huntInformations"));
     var container = document.getElementById("container");
     container.innerHTML = "";
     objects.objects.forEach(function(element){
@@ -78,6 +89,8 @@ function displayHunts(objects){
  */
 
 function viewHuntDetails(huntId){
+    returnBtn = document.getElementById("returnBtn");
+    returnBtn.innerHTML = "<div class\"btn\" onclick=\"displayHunts(null,false);\">Return</div>";
     huntInfo = JSON.parse(sessionStorage.getItem("hunt_"+huntId));
     var container = document.getElementById("container");
     container.innerHTML = "";
@@ -139,10 +152,14 @@ function displayTeamHuntAndChallenge(headers){
         var containter = document.getElementById("container");
         container.innerHTML = "";
         teamHuntData = JSON.parse(request.response);
+        var buttonMap = document.createElement("button");
+        buttonMap.innerHTML = "display map";
+        buttonMap.setAttribute("onclick","displayMap();");
+        buttonMap.setAttribute("class","btn");
+        container.appendChild(buttonMap);
         teamHuntData.challenge.forEach(function(item, index){
             sessionStorage.setItem("challenge"+index,
-                                   JSON.stringify(item));
-            
+                                   JSON.stringify(item)); 
          objectDiv = document.createElement("div");
          objectDiv.setAttribute("class", "row-fluid hero-unit");
          console.log(item.lock);
@@ -158,6 +175,29 @@ function displayTeamHuntAndChallenge(headers){
         
     }; 
     request.send();
+}
+
+function displayMap(){
+    var container = document.getElementById("container");
+    container.innerHTML = "";
+ 
+    var mapContainer = document.createElement("div");
+    mapContainer.setAttribute("id", "map_canvas");
+    mapContainer.setAttribute("style", "width:500px;height:400px;");
+
+    container.appendChild(mapContainer);
+    initialize();
+
+}
+
+function initialize(){
+    var map_canvas = document.getElementById("map_canvas");
+    var map_option = {
+      center : new google.maps.LatLng(36,119),
+      zoom : 8,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    }
+    var map = new google.maps.Map(map_canvas, map_option)
 }
 
 function submitAnswer(challengeId){
@@ -195,7 +235,7 @@ function submitAnswer(challengeId){
         requestNext.send(jsonToSend);
         var nextObjectDiv = document.getElementById("challenge_"+nextChallenge.id);
         nextObjectDiv.innerHTML = "<div id=\"challenge_"+nextChallenge.id+"\"><div>Go to the POI "+ nextChallenge.challenge.poi.title+"</div><p>And answer the following question: "+nextChallenge.challenge.question +"</p> <button class=\"btn\" onclick=\"submitAnswer("+nextChallenge.id+");\">Answer</button></div>";
-         
+        alert("Your answer has been submitted correctly go to the next challenge");         
     }else {
        alert("Bad answer");
     }
