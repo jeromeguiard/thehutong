@@ -10,7 +10,7 @@ function generateLogin(){
     containerLoginContent.setAttribute("id","containerLogin");
     containerLoginContent.setAttribute("class","hero-unit");
     containerLoginContent.innerHTML= "<h1>Login</h1><input type=\"text\" value=\"Team name\""+
-                                     " id=\"team\"><br/></input><input type=\"password\" "+
+                                     " id=\"team\" onfocus=\"this.value=''\"><br/></input><input type=\"password\" "+
                                      "id=\"password\"></input><br/><input type=\"button\" "+
                                      " class=\"btn\" value=\"login\" onclick=\"login();\"></input>";
     container.appendChild(containerLoginContent); 
@@ -217,14 +217,15 @@ function displayChallenges(){
         objectDiv.setAttribute("class", "row-fluid hero-unit");
         if (item.lock == 1){
              objectDiv.innerHTML = "<div id=\"challenge_"+item.id+
-                                  "\"><div>Go to the POI "+ item.challenge.poi.title+
+                                  "\"><p>Challenge "+(index +1)+"</p><div>Please go to the POI "+
+                                  item.challenge.poi.title+
                                   "</div><p>And answer the following question: "+
                                   item.challenge.question +
                                   "</p> <button class=\"btn\" onclick=\"submitAnswer("+
                                   item.id+", this);\">Answer</button></div>";
         }else{
             objectDiv.innerHTML = "<div id=\"challenge_"+item.id+
-                               "\">The challenge is lock</div>";   
+                               "\">Challenge "+(index+1)+" is lock</div>";   
         }
          container.appendChild(objectDiv);
    });
@@ -253,7 +254,25 @@ function displayMap(){
     container.appendChild(mapContainer);
     initialize();
     populateWithUnlockPOI();
+    navigator.geolocation.getCurrentPosition(displayMyLocation);
 }
+
+/*
+ *
+ * display the current position on the map
+ *
+ */
+
+function displayMyLocation(position){
+    var coordinates = new google.maps.LatLng(position.coords.latitude,
+                                             position.coords.longitude);
+    var marker = new google.maps.Marker({
+        position : coordinates,
+        titile : "Me"
+    });
+    marker.setMap(map);
+}
+
 
 /*
  *
@@ -284,6 +303,9 @@ function populateWithUnlockPOI(){
             var coordinateAsString = element.challenge.poi.point.replace("POINT (","").replace(")",""); 
             var coordinates = new google.maps.LatLng(parseFloat(coordinateAsString.split(" ")[1]),
                                                      parseFloat(coordinateAsString.split(" ")[0]));
+            //var symbolStatus = new google.maps.Symbol({
+            //    fillColor : "blue"
+           // });
             var marker = new google.maps.Marker({
                 position: coordinates,
                 title: element.challenge.poi.title
@@ -311,7 +333,7 @@ function submitAnswer(challengeId, btn){
     if (answer.toLowerCase() == currentChallenge.challenge.answer.toLowerCase()){
         //Preparing request for the current challenge
         var request = new XMLHttpRequest();
-        var jsonToSend = "{\"points\":"+currentChallenge.challenge.numberOfPoints
+        var currentJsonToSend = "{\"points\":"+currentChallenge.challenge.numberOfPoints
                          +", \"status\":"+1+"}";
         request.open("PATCH",
                      "/api/account/v1/challengeteamhunt/"+currentChallenge.id+"/",
@@ -320,39 +342,64 @@ function submitAnswer(challengeId, btn){
         request.setRequestHeader("Content-Type", "application/json");
 
         //Preparing request for the next challenge
-        var requestNext = new XMLHttpRequest();
-        var jsonToSend = "{\"lock\":"+1
-                         +", \"status\":"+2+"}";
-        requestNext.open("PATCH",
-                     "/api/account/v1/challengeteamhunt/"+(currentChallenge.id+1)+"/",
-                     false);
-        requestNext = setRequestHeaderAuthorization(requestNext);
-        requestNext.setRequestHeader("Content-Type", "application/json");
+        if (nextChallenge != null){
+            console.log(nextChallenge);
+            var requestNext = new XMLHttpRequest();
+            var nextJsonToSend = "{\"lock\":"+1
+                            +", \"status\":"+2+"}";
+            requestNext.open("PATCH",
+                         "/api/account/v1/challengeteamhunt/"+(currentChallenge.id+1)+"/",
+                         false);
+            requestNext = setRequestHeaderAuthorization(requestNext);
+            requestNext.setRequestHeader("Content-Type", "application/json");
+        }
 
         //Send requests
-        requestNext.send(jsonToSend);
-        request.send(jsonToSend);
-
-        var nextObjectDiv = document.getElementById("challenge_"+nextChallenge.id);
-        nextObjectDiv.innerHTML = "<div id=\"challenge_"+nextChallenge.id+
-                                  "\"><div>Go to the POI "+ nextChallenge.challenge.poi.title+
-                                  "</div><p>And answer the following question: "+
-                                  nextChallenge.challenge.question +
-                                  "</p> <button class=\"btn\" onclick=\"submitAnswer("+
-                                  nextChallenge.id+", this);\">Answer</button></div>";
+        request.send(currentJsonToSend);
+        
+        if (nextChallenge != null){
+            requestNext.send(nextJsonToSend);
+            var nextObjectDiv = document.getElementById("challenge_"+nextChallenge.id);
+            nextObjectDiv.innerHTML = "<div id=\"challenge_"+nextChallenge.id+
+                                      "\"><div>Go to the POI "+ nextChallenge.challenge.poi.title+
+                                      "</div><p>And answer the following question: "+
+                                      nextChallenge.challenge.question +
+                                      "</p> <button class=\"btn\" onclick=\"submitAnswer("+
+                                      nextChallenge.id+", this);\">Answer</button></div>";
+        }
 
         challenges[currentChallengeIndex].points = currentChallenge.challenge.numberOfPoints;
         challenges[currentChallengeIndex].status = 1;
-        challenges[nextChallengeIndex].status = 2;
-        challenges[nextChallengeIndex].lock = 1;
-
+        if (nextChallenge != null){
+            challenges[nextChallengeIndex].status = 2;
+            challenges[nextChallengeIndex].lock = 1;
+        }
         sessionStorage.setItem("challenges", JSON.stringify(challenges));
         btn.setAttribute("disabled", "disabled");
-        alert("Your answer has been submitted correctly go to the next challenge");         
+
+        if(nextChallenge != null){
+            alert("Your answer has been submitted correctly go to the next challenge");
+        }else{
+            alert("Congratulation you finish the hunt with " + retrieveTotalPoints() + " points.");
+        }
     }else {
         alert("Bad answer");
     }
 }
+
+function retrieveTotalPoints(){
+    var challenges = JSON.parse(sessionStorage.getItem("challenges"));
+    var totalPoints = 0;
+    challenges.forEach(function(element){
+        totalPoints += parseInt(element.points);
+    });
+    return totalPoints;
+}
+/*
+ *
+ *Set Authorization request header
+ *
+ */
 
 function setRequestHeaderAuthorization(request){
     request.setRequestHeader("Authorization", "ApiKey "+
