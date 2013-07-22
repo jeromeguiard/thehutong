@@ -148,7 +148,6 @@ function takePartInHunt(huntId, firstTry ){
         var huntTeam = {'user':'/api/account/v1/user/' + sessionStorage.getItem("userId")+'/',
                         'hunt':'/api/hunt/v1/hunt/'+huntId+'/',
                         'challenge':[]};
-        console.log(huntTeam);
         var jsonTosend = JSON.stringify(huntTeam);
         var request= new XMLHttpRequest();
         request.open("POST", "/api/account/v1/teamhunt/",false);
@@ -193,11 +192,19 @@ function displayChallenges(){
     var containter = document.getElementById("container");
     container.innerHTML = "";
 
-    var buttonMap = document.createElement("button");
-    buttonMap.innerHTML = "display map";
-    buttonMap.setAttribute("onclick","displayMap();");
-    buttonMap.setAttribute("class","btn");
-    container.appendChild(buttonMap);
+    if(document.getElementById("mapNavBar") == null){
+        var mapInNav = document.createElement("li");
+        var menu = document.getElementById("menu");
+        var mapInMenu = document.createElement("a");
+        mapInMenu.setAttribute("onclick", "displayMap();");
+        mapInMenu.setAttribute("id", "mapNavBar");
+        mapInMenu.innerText = "Map";
+        mapInNav.appendChild(mapInMenu); 
+        menu.appendChild(mapInNav);
+    }
+
+    var returnBtn = document.getElementById("returnBtn");
+    returnBtn.innerHTML = "";
 
     var mapCanvas = document.getElementById("map_canvas");
     if(mapCanvas != null){
@@ -206,22 +213,21 @@ function displayChallenges(){
 
     challenges = JSON.parse(sessionStorage.getItem("challenges"));
     challenges.forEach(function(item, index){
-    objectDiv = document.createElement("div");
-    objectDiv.setAttribute("class", "row-fluid hero-unit");
-    console.log(item.lock);
-    if (item.lock == 1){
-         objectDiv.innerHTML = "<div id=\"challenge_"+item.id+
-                              "\"><div>Go to the POI "+ item.challenge.poi.title+
-                              "</div><p>And answer the following question: "+
-                              item.challenge.question +
-                              "</p> <button class=\"btn\" onclick=\"submitAnswer("+
-                              item.id+");\">Answer</button></div>";
-       }else{
-         objectDiv.innerHTML = "<div id=\"challenge_"+item.id+
+        objectDiv = document.createElement("div");
+        objectDiv.setAttribute("class", "row-fluid hero-unit");
+        if (item.lock == 1){
+             objectDiv.innerHTML = "<div id=\"challenge_"+item.id+
+                                  "\"><div>Go to the POI "+ item.challenge.poi.title+
+                                  "</div><p>And answer the following question: "+
+                                  item.challenge.question +
+                                  "</p> <button class=\"btn\" onclick=\"submitAnswer("+
+                                  item.id+", this);\">Answer</button></div>";
+        }else{
+            objectDiv.innerHTML = "<div id=\"challenge_"+item.id+
                                "\">The challenge is lock</div>";   
-      }
+        }
          container.appendChild(objectDiv);
-      });
+   });
 }
 
 /*
@@ -239,11 +245,14 @@ function displayMap(){
     mapContainer.setAttribute("style", "width:500px;height:400px;");
 
     var returnBtn = document.getElementById("returnBtn");
-    returnBtn.children[0].setAttribute("onclick", "displayChallenges();");
+    returnBtnMenu = document.createElement("a");
+    returnBtnMenu.innerHTML = "Return";
+    returnBtnMenu.setAttribute("onclick", "displayChallenges();");
+    returnBtn.appendChild(returnBtnMenu);
+
     container.appendChild(mapContainer);
     initialize();
     populateWithUnlockPOI();
-
 }
 
 /*
@@ -284,17 +293,19 @@ function populateWithUnlockPOI(){
     });
 }
 
-function submitAnswer(challengeId){
-     var challenges = JSON.parse(sessionStorage.getItem("challenges"));
-     var currentChallenge = null; 
-     var nextChallenge = null;
-     challenges.forEach(function(element, index){
-         if (element.id == challengeId){
-             currentChallenge = element;
-         }
-         if (element.id == challengeId+1){
-             nextChallenge = element;
-         }
+function submitAnswer(challengeId, btn){
+    var challenges = JSON.parse(sessionStorage.getItem("challenges"));
+    var currentChallenge = null; 
+    var nextChallenge = null;
+    challenges.forEach(function(element, index){
+        if (element.id == challengeId){
+            currentChallenge = element;
+            currentChallengeIndex = index;
+        }
+        if (element.id == challengeId+1){
+            nextChallenge = element;
+            nextChallengeIndex = index;
+        }
     });
     answer = window.prompt("Please type the answer:");
     if (answer.toLowerCase() == currentChallenge.challenge.answer.toLowerCase()){
@@ -328,7 +339,15 @@ function submitAnswer(challengeId){
                                   "</div><p>And answer the following question: "+
                                   nextChallenge.challenge.question +
                                   "</p> <button class=\"btn\" onclick=\"submitAnswer("+
-                                  nextChallenge.id+");\">Answer</button></div>";
+                                  nextChallenge.id+", this);\">Answer</button></div>";
+
+        challenges[currentChallengeIndex].points = currentChallenge.challenge.numberOfPoints;
+        challenges[currentChallengeIndex].status = 1;
+        challenges[nextChallengeIndex].status = 2;
+        challenges[nextChallengeIndex].lock = 1;
+
+        sessionStorage.setItem("challenges", JSON.stringify(challenges));
+        btn.setAttribute("disabled", "disabled");
         alert("Your answer has been submitted correctly go to the next challenge");         
     }else {
         alert("Bad answer");

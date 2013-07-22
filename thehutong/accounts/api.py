@@ -66,5 +66,6 @@ class TeamHuntResource(ModelResource):
         for index, chal in enumerate(bundle.obj.hunt.challenges.all()) :
             if index == 0 :
                 bundle.obj.challenge.create(challenge=chal, lock = 1, status=2)
-            bundle.obj.challenge.create(challenge=chal)
+            else :
+                bundle.obj.challenge.create(challenge=chal)
         return bundle
