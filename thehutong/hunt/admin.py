@@ -4,7 +4,7 @@ from .models import PointOfInterest, Challenge, Hunt
 
 BEIJING_LAT = 4850913.57056
 BEIJING_LON = 12958378.95748
-DEFAULT_ZOOM = 10
+DEFAULT_ZOOM = 11
 
 
 class PointOfInterestAdmin(admin.OSMGeoAdmin):

@@ -268,7 +268,8 @@ function displayMyLocation(position){
                                              position.coords.longitude);
     var marker = new google.maps.Marker({
         position : coordinates,
-        titile : "Me"
+        titile : "Me",
+        icon: "http://maps.google.com/mapfiles/ms/icons/green-dot.png"
     });
     marker.setMap(map);
 }
@@ -306,10 +307,18 @@ function populateWithUnlockPOI(){
             //var symbolStatus = new google.maps.Symbol({
             //    fillColor : "blue"
            // });
-            var marker = new google.maps.Marker({
-                position: coordinates,
-                title: element.challenge.poi.title
-            });
+            if (element.status == 2 ){
+                var marker = new google.maps.Marker({
+                    position: coordinates,
+                    title: element.challenge.poi.title,
+                    icon : "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                });
+            }else{
+                var marker = new google.maps.Marker({
+                    position: coordinates,
+                    title: element.challenge.poi.title,
+                }); 
+            }
             marker.setMap(map);
         }
     });
