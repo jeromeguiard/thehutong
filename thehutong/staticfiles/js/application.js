@@ -86,16 +86,31 @@ function displayHunts(objects, firstTime){
         objects = JSON.parse(sessionStorage.getItem("huntInformations"));
     var container = document.getElementById("container");
     container.innerHTML = "";
-    objects.objects.forEach(function(element){
-        sessionStorage.setItem("hunt_"+element.id, JSON.stringify(element)); 
-        var objectDiv = document.createElement("div");
-        objectDiv.setAttribute("class","row-fluid hero-unit");
-        objectDiv.innerHTML = "<div class=\"span4\"><div>"+element.title +"</div><div>Hunt from "+
+    var huntTitle = document.createElement("div");
+    huntTitle.setAttribute("class","jumbotron");
+    huntTitle.innerHTML = "<h2>List of hunts</h2><div class=\"lead\">Select the"+
+                          " hunt you want to take part in. All hunts here are private (need a password)</div>";
+    container.appendChild(huntTitle);
+    var objectDiv= null;
+    objects.objects.forEach(function(element, index){
+        sessionStorage.setItem("hunt_"+element.id, JSON.stringify(element));
+        if(index % 3==0){
+           // var hrElement = document.createElement("hr");
+            //container.appendChild(hrElement);
+            objectDiv = document.createElement("div");
+            objectDiv.setAttribute("class","row-fluid");
+        }
+        console.log(objectDiv);
+        objectDiv.innerHTML += "<div class=\"span4\"><div class=\"well\"><h2>"+element.title +"</h2><p>Hunt from "+
                                element.startingPOI.title+" to "+ element.endingPOI.title+
-                               "</div><span class=\"btn\" onclick=\"viewHuntDetails("+ element.id+
-                               ");\">View hunt</span></div>";
+                               "</p><span class=\"btn\" onclick=\"viewHuntDetails("+ element.id+
+                               ");\">View hunt</span></div></div>";
         container.appendChild(objectDiv);
     });
+    var footerElement = document.createElement("footer");
+    footerElement.setAttribute("class", "footer");
+    footerElement.innerHTML = "The hutong";
+    container.appendChild(footerElement);
 }
 
 /*
@@ -118,13 +133,13 @@ function viewHuntDetails(huntId){
     var container = document.getElementById("container");
     container.innerHTML = "";
     objectDiv = document.createElement("div"); 
-    objectDiv.innerHTML = "<div class=\"hero-unit\" <div>"+huntInfo.title+
-                          "</div> <div>Starting from : "+ huntInfo.startingPOI.title+
-                          "</div><div>Ending at  : "+ huntInfo.endingPOI.title+
-                          "</div><div>The hunt contains "+ huntInfo.challenges.length +
+    objectDiv.innerHTML = "<div><div class=\"jumbotron\"> <h2>"+huntInfo.title+
+                          "</h2><div class=\"lead\">The hunt contains "+ huntInfo.challenges.length +
                           " challenges. When you start it you will have "+ huntInfo.duration+
-                          " minutes to achieve all challenges.</div><span class=\"btn\" onclick=\"takePartInHunt("
-                          + huntId+");\">Take part in hunt</span></div>";
+                          " minutes to achieve all challenges.</div><span class=\"btn btn-large btn-success\" onclick=\"takePartInHunt("
+                          + huntId+");\">Take part in hunt</span></div> <div class=\"hero-unit\">Starting from : "+ huntInfo.startingPOI.title+
+                          "<br/>Ending at  : "+ huntInfo.endingPOI.title+
+                          "</div></div>";
     container.appendChild(objectDiv);
 }
 
@@ -143,6 +158,7 @@ function takePartInHunt(huntId, firstTry ){
     else
         password = window.prompt("Wrong pass try again:");
         
+    console.log(password);
     var huntInfo = JSON.parse(sessionStorage.getItem("hunt_"+huntId));
     if (password == huntInfo.unlockingPass){
         var huntTeam = {'user':'/api/account/v1/user/' + sessionStorage.getItem("userId")+'/',
@@ -155,7 +171,10 @@ function takePartInHunt(huntId, firstTry ){
         request.setRequestHeader("Content-Type","application/json");
         request.send(jsonTosend);
         getTeamHuntAndChallenge(request.getResponseHeader("Location"));
-    }else{
+    }else if(password == null){
+        return;
+    }
+    else{
        takePartInHunt(huntId, false); 
     }
 }
@@ -217,15 +236,15 @@ function displayChallenges(){
         objectDiv.setAttribute("class", "row-fluid hero-unit");
         if (item.lock == 1){
              objectDiv.innerHTML = "<div id=\"challenge_"+item.id+
-                                  "\"><p>Challenge "+(index +1)+"</p><div>Please go to the POI "+
+                                  "\"><h1>Challenge "+(index +1)+"</h1><div>Please go to the POI "+
                                   item.challenge.poi.title+
-                                  "</div><p>And answer the following question: "+
+                                  "</div><p>And answer the following question: <br/>"+
                                   item.challenge.question +
-                                  "</p> <button class=\"btn\" onclick=\"submitAnswer("+
+                                  "</p> <button class=\"btn btn-success btn-large\" onclick=\"submitAnswer("+
                                   item.id+", this);\">Answer</button></div>";
         }else{
             objectDiv.innerHTML = "<div id=\"challenge_"+item.id+
-                               "\">Challenge "+(index+1)+" is lock</div>";   
+                               "\"><h3 challengeId=\""+(index+1)+"\">Challenge "+(index+1)+" is lock</h3></div>";   
         }
          container.appendChild(objectDiv);
    });
@@ -352,7 +371,6 @@ function submitAnswer(challengeId, btn){
 
         //Preparing request for the next challenge
         if (nextChallenge != null){
-            console.log(nextChallenge);
             var requestNext = new XMLHttpRequest();
             var nextJsonToSend = "{\"lock\":"+1
                             +", \"status\":"+2+"}";
@@ -369,11 +387,12 @@ function submitAnswer(challengeId, btn){
         if (nextChallenge != null){
             requestNext.send(nextJsonToSend);
             var nextObjectDiv = document.getElementById("challenge_"+nextChallenge.id);
+            var challengeId = nextObjectDiv.children[0].getAttribute("challengeId");
             nextObjectDiv.innerHTML = "<div id=\"challenge_"+nextChallenge.id+
-                                      "\"><div>Go to the POI "+ nextChallenge.challenge.poi.title+
-                                      "</div><p>And answer the following question: "+
+                                      "\"><h1>Challenge "+ challengeId+"</h1><div>Please go to the POI "+ nextChallenge.challenge.poi.title+
+                                      "</div><p>And answer the following question: <br/>"+
                                       nextChallenge.challenge.question +
-                                      "</p> <button class=\"btn\" onclick=\"submitAnswer("+
+                                      "</p> <button class=\"btn btn-large btn-success\" onclick=\"submitAnswer("+
                                       nextChallenge.id+", this);\">Answer</button></div>";
         }
 
