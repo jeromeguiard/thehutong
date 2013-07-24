@@ -220,6 +220,10 @@ function displayChallenges(){
         mapInMenu.innerText = "Map";
         mapInNav.appendChild(mapInMenu); 
         menu.appendChild(mapInNav);
+    }else{ 
+        var mapNavBar = document.getElementById("mapNavBar");
+        mapNavBar.setAttribute("onclick", "displayMap()");
+        mapNavBar.innerText = "Map";
     }
 
     var returnBtn = document.getElementById("returnBtn");
@@ -270,10 +274,17 @@ function displayMap(){
     returnBtnMenu.setAttribute("onclick", "displayChallenges();");
     returnBtn.appendChild(returnBtnMenu);
 
+    var mapNavBar = document.getElementById("mapNavBar");
+    mapNavBar.setAttribute("onclick", "calcRoute()");
+    mapNavBar.innerText = "Direction";
+
     container.appendChild(mapContainer);
     initialize();
     populateWithUnlockPOI();
     navigator.geolocation.getCurrentPosition(displayMyLocation);
+    directionsService = new google.maps.DirectionsService();
+    directionsDisplay = new google.maps.DirectionsRenderer();
+    directionsDisplay.setMap(map);
 }
 
 /*
@@ -285,6 +296,7 @@ function displayMap(){
 function displayMyLocation(position){
     var coordinates = new google.maps.LatLng(position.coords.latitude,
                                              position.coords.longitude);
+    start = coordinates;
     var marker = new google.maps.Marker({
         position : coordinates,
         titile : "Me",
@@ -327,6 +339,7 @@ function populateWithUnlockPOI(){
             //    fillColor : "blue"
            // });
             if (element.status == 2 ){
+                end = coordinates;
                 var marker = new google.maps.Marker({
                     position: coordinates,
                     title: element.challenge.poi.title,
@@ -437,6 +450,19 @@ function setRequestHeaderAuthorization(request){
     return request;
 }
 
+function calcRoute(){
+    var request = {
+        origin: start,
+        destination : end,
+        travelMode: google.maps.TravelMode.DRIVING
+    };
+    directionsService.route(request, function(result, status){
+       // if(status == google.maps.DirectionStatus.OK){
+           directionsDisplay.setDirections(result);
+       // }
+    });
+}
+
 /*
  *
  *First execution with the test if local/session storage is on
@@ -445,7 +471,10 @@ function setRequestHeaderAuthorization(request){
 
 
 var map = null;
-
+var start = null;
+var end = null;
+var directionDisplay;
+var directionsService = null; 
 try{
     'localStorage' in window && window['localStorage'] !== null;
     generateLogin();
