@@ -9,10 +9,10 @@ function generateLogin(){
     var containerLoginContent = document.createElement("div");
     containerLoginContent.setAttribute("id","containerLogin");
     containerLoginContent.setAttribute("class","hero-unit");
-    containerLoginContent.innerHTML= "<h1>Login</h1><input type=\"text\" value=\"Team name\""+
+    containerLoginContent.innerHTML= "<h1>Login</h1><p><input type=\"text\" value=\"Team name\""+
                                      " id=\"team\" onfocus=\"this.value=''\"><br/></input><input type=\"password\" "+
                                      "id=\"password\"></input><br/><input type=\"button\" "+
-                                     " class=\"btn\" value=\"login\" onclick=\"login();\"></input>";
+                                     " class=\"btn\" value=\"login\" onclick=\"login();\"></input></p>";
     container.appendChild(containerLoginContent); 
 }
 
@@ -100,7 +100,6 @@ function displayHunts(objects, firstTime){
             objectDiv = document.createElement("div");
             objectDiv.setAttribute("class","row-fluid");
         }
-        console.log(objectDiv);
         objectDiv.innerHTML += "<div class=\"span4\"><div class=\"well\"><h2>"+element.title +"</h2><p>Hunt from "+
                                element.startingPOI.title+" to "+ element.endingPOI.title+
                                "</p><span class=\"btn\" onclick=\"viewHuntDetails("+ element.id+
@@ -158,7 +157,6 @@ function takePartInHunt(huntId, firstTry ){
     else
         password = window.prompt("Wrong pass try again:");
         
-    console.log(password);
     var huntInfo = JSON.parse(sessionStorage.getItem("hunt_"+huntId));
     if (password == huntInfo.unlockingPass){
         var huntTeam = {'user':'/api/account/v1/user/' + sessionStorage.getItem("userId")+'/',
@@ -239,13 +237,18 @@ function displayChallenges(){
         objectDiv = document.createElement("div");
         objectDiv.setAttribute("class", "row-fluid hero-unit");
         if (item.lock == 1){
-             objectDiv.innerHTML = "<div id=\"challenge_"+item.id+
+            objectDiv.innerHTML = "<div id=\"challenge_"+item.id+
                                   "\"><h1>Challenge "+(index +1)+"</h1><div>Please go to the POI "+
                                   item.challenge.poi.title+
                                   "</div><p>And answer the following question: <br/>"+
                                   item.challenge.question +
-                                  "</p> <button class=\"btn btn-success btn-large\" onclick=\"submitAnswer("+
-                                  item.id+", this);\">Answer</button></div>";
+                                 "</p>"
+            if (item.status  == 2 ){
+                 objectDiv.innerHTML += "<button class=\"btn btn-success btn-large\" onclick=\"submitAnswer("+
+                                       item.id+", this);\">Answer</button></div>";
+            }else{
+                 objectDiv.innerHTML += "<button class=\"btn btn-success btn-large\" disabled=\"disabled\">Accomplished</button></div>"; 
+            }
         }else{
             objectDiv.innerHTML = "<div id=\"challenge_"+item.id+
                                "\"><h3 challengeId=\""+(index+1)+"\">Challenge "+(index+1)+" is lock</h3></div>";   
@@ -417,6 +420,7 @@ function submitAnswer(challengeId, btn){
         }
         sessionStorage.setItem("challenges", JSON.stringify(challenges));
         btn.setAttribute("disabled", "disabled");
+        btn.innerText = "Accomplished";
 
         if(nextChallenge != null){
             alert("Your answer has been submitted correctly go to the next challenge");
