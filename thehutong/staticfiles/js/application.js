@@ -262,7 +262,7 @@ function displayMap(){
  
     var mapContainer = document.createElement("div");
     mapContainer.setAttribute("id", "map_canvas");
-    mapContainer.setAttribute("style", "width:500px;height:400px;");
+    mapContainer.setAttribute("style", "width:"+window.innerWidth+"px;height:"+window.innerHeight+"px;");
 
     var returnBtn = document.getElementById("returnBtn");
     returnBtnMenu = document.createElement("a");
