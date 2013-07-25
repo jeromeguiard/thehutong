@@ -279,7 +279,7 @@ function displayMap(){
 
     var mapNavBar = document.getElementById("mapNavBar");
     mapNavBar.setAttribute("onclick", "calcRoute()");
-    mapNavBar.innerText = "Direction";
+    mapNavBar.innerText = "Show route";
 
     container.appendChild(mapContainer);
     initialize();
