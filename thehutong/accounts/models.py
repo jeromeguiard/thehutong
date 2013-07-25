@@ -4,7 +4,7 @@ from thehutong.hunt.models import Hunt, Challenge
 from django.utils.translation import ugettext as _
 from tastypie.models import create_api_key
 
-#models.signals.post_save.connect(create_api_key, sender=User)
+models.signals.post_save.connect(create_api_key, sender=User)
 
 class ChallengeTeamHunt(models.Model):
     """
