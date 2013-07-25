@@ -89,7 +89,7 @@ function displayHunts(objects, firstTime){
     var huntTitle = document.createElement("div");
     huntTitle.setAttribute("class","jumbotron");
     huntTitle.innerHTML = "<h2>List of hunts</h2><div class=\"lead\">Select the"+
-                          " hunt you want to take part in. All hunts here are private (need a password)</div>";
+                          " hunt you want to take part in. All hunts here are private (require a password)</div>";
     container.appendChild(huntTitle);
     var objectDiv= null;
     objects.objects.forEach(function(element, index){
@@ -134,7 +134,7 @@ function viewHuntDetails(huntId){
     objectDiv = document.createElement("div"); 
     objectDiv.innerHTML = "<div><div class=\"jumbotron\"> <h2>"+huntInfo.title+
                           "</h2><div class=\"lead\">The hunt contains "+ huntInfo.challenges.length +
-                          " challenges. When you start it you will have "+ huntInfo.duration+
+                          " challenges. When you start it you will have "+ huntInfo.duration +
                           " minutes to achieve all challenges.</div><span class=\"btn btn-large btn-success\" onclick=\"takePartInHunt("
                           + huntId+");\">Take part in hunt</span></div> <div class=\"hero-unit\">Starting from : "+ huntInfo.startingPOI.title+
                           "<br/>Ending at  : "+ huntInfo.endingPOI.title+
@@ -155,7 +155,7 @@ function takePartInHunt(huntId, firstTry ){
     if (firstTry )
         password = window.prompt("Password for the hunt:");
     else
-        password = window.prompt("Wrong pass try again:");
+        password = window.prompt("Wrong password, try again:");
         
     var huntInfo = JSON.parse(sessionStorage.getItem("hunt_"+huntId));
     if (password == huntInfo.unlockingPass){
@@ -423,12 +423,12 @@ function submitAnswer(challengeId, btn){
         btn.innerText = "Accomplished";
 
         if(nextChallenge != null){
-            alert("Your answer has been submitted correctly go to the next challenge");
+            alert("Your answer has been submitted correctly. Go to the next challenge.");
         }else{
-            alert("Congratulation you finish the hunt with " + retrieveTotalPoints() + " points.");
+            alert("Congratulations! You finished the hunt with " + retrieveTotalPoints() + " points.");
         }
     }else {
-        alert("Bad answer");
+        alert("Wrong answer");
     }
 }
 
@@ -483,5 +483,5 @@ try{
     'localStorage' in window && window['localStorage'] !== null;
     generateLogin();
 } catch(e){
-    document.getElementById("container").innerHTML="Your Bowser doesn't support some HTML5 functions. Please upgrade to a modern one for more features and safety.";
+    document.getElementById("container").innerHTML="Your browser doesn't support HTML5. Please upgrade to a more modern one for more features and safety.";
 }
