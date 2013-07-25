@@ -251,7 +251,7 @@ function displayChallenges(){
             }
         }else{
             objectDiv.innerHTML = "<div id=\"challenge_"+item.id+
-                               "\"><h3 challengeId=\""+(index+1)+"\">Challenge "+(index+1)+" is lock</h3></div>";   
+                               "\"><h3 challengeId=\""+(index+1)+"\">Challenge "+(index+1)+" is locked</h3></div>";   
         }
          container.appendChild(objectDiv);
    });
