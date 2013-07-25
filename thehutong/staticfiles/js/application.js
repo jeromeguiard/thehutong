@@ -242,12 +242,12 @@ function displayChallenges(){
                                   item.challenge.poi.title+
                                   "</div><p>And answer the following question: <br/>"+
                                   item.challenge.question +
-                                 "</p>"
+                                 "<br/>This challenge is worth "+item.challenge.numberOfPoints+" points! </p>"
             if (item.status  == 2 ){
                  objectDiv.innerHTML += "<button class=\"btn btn-success btn-large\" onclick=\"submitAnswer("+
                                        item.id+", this);\">Answer</button></div>";
             }else{
-                 objectDiv.innerHTML += "<button class=\"btn btn-success btn-large\" disabled=\"disabled\">Accomplished</button></div>"; 
+                 objectDiv.innerHTML += "<button class=\"btn btn-success btn-large\" disabled=\"disabled\">Accomplished</button><p>Points earned : "+ item.points+"</p></div>"; 
             }
         }else{
             objectDiv.innerHTML = "<div id=\"challenge_"+item.id+
@@ -408,7 +408,9 @@ function submitAnswer(challengeId, btn){
                                       "\"><h1>Challenge "+ challengeId+"</h1><div>Please go to the POI "+ nextChallenge.challenge.poi.title+
                                       "</div><p>And answer the following question: <br/>"+
                                       nextChallenge.challenge.question +
-                                      "</p> <button class=\"btn btn-large btn-success\" onclick=\"submitAnswer("+
+                                      "<br/> this challenge is worth "+ nextChallenge.challenge.numberOfPoints +
+                                      "points!</p>"+
+                                      " <button class=\"btn btn-large btn-success\" onclick=\"submitAnswer("+
                                       nextChallenge.id+", this);\">Answer</button></div>";
         }
 
@@ -420,7 +422,10 @@ function submitAnswer(challengeId, btn){
         }
         sessionStorage.setItem("challenges", JSON.stringify(challenges));
         btn.setAttribute("disabled", "disabled");
-        btn.innerText = "Accomplished";
+        btn.innerText = "Accomplished"// with "+ currentChallenge.challenge.numberOfPoints+ " points.";
+        var displayPoints = document.createElement("p");
+        displayPoints.innerText = "Points earned : " + currentChallenge.challenge.numberOfPoints ;
+        btn.parentNode.appendChild(displayPoints);
 
         if(nextChallenge != null){
             alert("Your answer has been submitted correctly. Go to the next challenge.");
