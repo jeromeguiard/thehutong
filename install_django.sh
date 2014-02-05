@@ -17,13 +17,13 @@ virtualenv ~/.virtualenv/thehutong
 source ~/.virtualenv/thehutong/bin/activate
 
 #Install the database
-debconf-set-selections <<< 'mysql-server-5.5 mysql-server/root_password password P0ww0w'
-debconf-set-selections <<< 'mysql-server-5.5 mysql-server/root_password_again password P0ww0w'
+debconf-set-selections <<< 'mysql-server-5.5 mysql-server/root_password password thehutong'
+debconf-set-selections <<< 'mysql-server-5.5 mysql-server/root_password_again password thehutong'
 
 #apt-get install mysql-server libmysqlclient-dev -y 
 apt-get install postgreql postgresql-server-dev-9.1 postgresql-contrib-9.1 postgres-client-9.1 libxml2 libxml2-dev libpq-dev python-gdal libgeoip1 -y 
 
-#mysql -pP0ww0w < sql_ini.sql 
+#mysql -pthehutong < sql_ini.sql 
 
 #spatial libraries installation
 apt-get install binutils libproj-dev gdal-bin bzip2 g++ make libpq-dev -y
